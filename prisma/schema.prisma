@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String?
+  role     Role
+
+  isDeleted   Boolean @default(false)
+  isConfirmed Boolean @default(false)
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @default(now()) @updatedAt
+  logActions LogAction[]
+}
+
+enum Role {
+  Owner
+  Admin
+  ManagerOperational
+  Cashier
+}
+
+model Customer {
+  id   String   @id @default(uuid())
+  name String
+  code String   @unique
+  type CodeType
+
+  orders Order[]
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum CodeType {
+  Email
+  Phone
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  name        String
+  price       Float
+  amount      Float
+  cogs        Float   @default(0)
+  category    String
+  description String? @db.Text()
+  image       String?
+
+  productPurchases ProductPurchase[]
+  orderItems       OrderItem[]
+  productDefects   ProductDefect[]
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Update COGS and amount ++ every input/edit
+model ProductPurchase {
+  id          String  @id @default(uuid())
+  amount      Float
+  price       Float
+  total       Float
+  description String? @db.Text()
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Order {
+  id          String  @id @default(uuid())
+  finalTotal  Float
+  subTotal    Float
+  discount    Float
+  tax         Float
+  description String? @db.Text()
+
+  orderItems  OrderItem[]
+  transaction Transaction?
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Update product amount -- every input/edit
+model OrderItem {
+  id     String @id @default(uuid())
+  amount Float
+  price  Float
+  total  Float
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Transaction {
+  id     String            @id @default(uuid())
+  amount Float
+  method PaymentMethod
+  status TransactionStatus
+  detail Json
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum PaymentMethod {
+  Cash
+  VirtualAccountOrBank
+}
+
+enum TransactionStatus {
+  Pending
+  Success
+}
+
+// Update product amount -- every input/edit
+model ProductDefect {
+  id     String @id @default(uuid())
+  reason String
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model LogAction {
+  id             String @id @default(uuid())
+  description    String
+  detail         Json
+  referenceId    String
+  referenceModel String
+  action         Action
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum Action {
+  Create
+  Update
+  Delete
+}
+
+model Information {
+  id       String @id @default(uuid())
+  tax      Float
+  discount Float
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

@@ -1,0 +1,11 @@
+-- CreateTable
+CREATE TABLE "Information" (
+    "id" TEXT NOT NULL,
+    "tax" DOUBLE PRECISION NOT NULL,
+    "discount" DOUBLE PRECISION NOT NULL,
+    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Information_pkey" PRIMARY KEY ("id")
+);

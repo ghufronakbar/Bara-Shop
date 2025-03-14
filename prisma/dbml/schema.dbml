@@ -1,0 +1,175 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  name String [not null]
+  email String [unique, not null]
+  password String
+  role Role [not null]
+  isDeleted Boolean [not null, default: false]
+  isConfirmed Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  logActions LogAction [not null]
+}
+
+Table Customer {
+  id String [pk]
+  name String [not null]
+  code String [unique, not null]
+  type CodeType [not null]
+  orders Order [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Product {
+  id String [pk]
+  name String [not null]
+  price Float [not null]
+  amount Float [not null]
+  cogs Float [not null, default: 0]
+  category String [not null]
+  description String
+  image String
+  productPurchases ProductPurchase [not null]
+  orderItems OrderItem [not null]
+  productDefects ProductDefect [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table ProductPurchase {
+  id String [pk]
+  amount Float [not null]
+  price Float [not null]
+  total Float [not null]
+  description String
+  productId String [not null]
+  product Product [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Order {
+  id String [pk]
+  finalTotal Float [not null]
+  subTotal Float [not null]
+  discount Float [not null]
+  tax Float [not null]
+  description String
+  orderItems OrderItem [not null]
+  transaction Transaction
+  customerId String
+  customer Customer
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table OrderItem {
+  id String [pk]
+  amount Float [not null]
+  price Float [not null]
+  total Float [not null]
+  orderId String [not null]
+  order Order [not null]
+  productId String [not null]
+  product Product [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Transaction {
+  id String [pk]
+  amount Float [not null]
+  method PaymentMethod [not null]
+  status TransactionStatus [not null]
+  detail Json [not null]
+  orderId String [unique, not null]
+  order Order [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table ProductDefect {
+  id String [pk]
+  reason String [not null]
+  productId String [not null]
+  product Product [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table LogAction {
+  id String [pk]
+  description String [not null]
+  detail Json [not null]
+  referenceId String [not null]
+  referenceModel String [not null]
+  action Action [not null]
+  userId String [not null]
+  user User [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Information {
+  id String [pk]
+  tax Float [not null]
+  discount Float [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Enum Role {
+  Owner
+  Admin
+  ManagerOperational
+  Cashier
+}
+
+Enum CodeType {
+  Email
+  Phone
+}
+
+Enum PaymentMethod {
+  Cash
+  VirtualAccountOrBank
+}
+
+Enum TransactionStatus {
+  Pending
+  Success
+}
+
+Enum Action {
+  Create
+  Update
+  Delete
+}
+
+Ref: ProductPurchase.productId > Product.id [delete: Cascade]
+
+Ref: Order.customerId > Customer.id [delete: Cascade]
+
+Ref: OrderItem.orderId > Order.id [delete: Cascade]
+
+Ref: OrderItem.productId > Product.id [delete: Cascade]
+
+Ref: Transaction.orderId - Order.id [delete: Cascade]
+
+Ref: ProductDefect.productId > Product.id [delete: Cascade]
+
+Ref: LogAction.userId > User.id [delete: Cascade]

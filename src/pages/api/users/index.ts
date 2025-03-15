@@ -2,7 +2,8 @@ import { db } from "@/config/db";
 import { $Enums } from "@prisma/client";
 import { type NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
-import sendEmail from "@/utils/node-mailer/send-email";
+import { sendEmail } from "@/utils/node-mailer/send-email";
+import AuthApi from "@/middleware/auth-api";
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
   const data = await db.user.findMany({
@@ -65,9 +66,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (req.method) {
       case "GET":
-        return GET(req, res);
+        return AuthApi(GET, ["Admin", "Owner"])(req, res);
       case "POST":
-        return POST(req, res);
+        return AuthApi(POST, ["Owner"])(req, res);
       default:
         return res.status(405).json({ message: "Method not allowed" });
     }

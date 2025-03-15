@@ -22,9 +22,10 @@ model User {
   isDeleted   Boolean @default(false)
   isConfirmed Boolean @default(false)
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @default(now()) @updatedAt
-  logActions LogAction[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  logActions  LogAction[]
+  SendMessage SendMessage[]
 }
 
 enum Role {
@@ -40,7 +41,8 @@ model Customer {
   code String   @unique
   type CodeType
 
-  orders Order[]
+  orders       Order[]
+  sendMessages SendMessage[]
 
   isDeleted Boolean @default(false)
 
@@ -136,6 +138,9 @@ model Transaction {
   status TransactionStatus
   detail Json
 
+  snapToken   String?
+  redirectUrl String?
+
   orderId String @unique
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -158,6 +163,7 @@ enum TransactionStatus {
 // Update product amount -- every input/edit
 model ProductDefect {
   id     String @id @default(uuid())
+  amount Int
   reason String
 
   productId String
@@ -196,6 +202,22 @@ model Information {
   id       String @id @default(uuid())
   tax      Float
   discount Float
+
+  isDeleted Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model SendMessage {
+  id      String @id @default(uuid())
+  subject String
+  message String @db.Text()
+
+  senderId String
+  from     User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  customers Customer[]
 
   isDeleted Boolean @default(false)
 

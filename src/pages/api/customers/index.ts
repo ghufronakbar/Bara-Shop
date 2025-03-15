@@ -1,4 +1,5 @@
 import { db } from "@/config/db";
+import AuthApi from "@/middleware/auth-api";
 import { $Enums } from "@prisma/client";
 import { type NextApiRequest, NextApiResponse } from "next";
 
@@ -58,9 +59,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (req.method) {
       case "GET":
-        return GET(req, res);
+        return AuthApi(GET, ["Admin", "Owner", "Cashier"])(req, res);
       case "POST":
-        return POST(req, res);
+        return AuthApi(POST, ["Admin", "Owner", "Cashier"])(req, res);
       default:
         return res.status(405).json({ message: "Method not allowed" });
     }

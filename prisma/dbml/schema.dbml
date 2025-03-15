@@ -13,6 +13,7 @@ Table User {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   logActions LogAction [not null]
+  SendMessage SendMessage [not null]
 }
 
 Table Customer {
@@ -21,6 +22,7 @@ Table Customer {
   code String [unique, not null]
   type CodeType [not null]
   orders Order [not null]
+  sendMessages SendMessage [not null]
   isDeleted Boolean [not null, default: false]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -92,6 +94,8 @@ Table Transaction {
   method PaymentMethod [not null]
   status TransactionStatus [not null]
   detail Json [not null]
+  snapToken String
+  redirectUrl String
   orderId String [unique, not null]
   order Order [not null]
   isDeleted Boolean [not null, default: false]
@@ -101,6 +105,7 @@ Table Transaction {
 
 Table ProductDefect {
   id String [pk]
+  amount Int [not null]
   reason String [not null]
   productId String [not null]
   product Product [not null]
@@ -130,6 +135,23 @@ Table Information {
   isDeleted Boolean [not null, default: false]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+}
+
+Table SendMessage {
+  id String [pk]
+  subject String [not null]
+  message String [not null]
+  senderId String [not null]
+  from User [not null]
+  customers Customer [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table CustomerToSendMessage {
+  sendmessagesId String [ref: > SendMessage.id]
+  customersId String [ref: > Customer.id]
 }
 
 Enum Role {
@@ -173,3 +195,5 @@ Ref: Transaction.orderId - Order.id [delete: Cascade]
 Ref: ProductDefect.productId > Product.id [delete: Cascade]
 
 Ref: LogAction.userId > User.id [delete: Cascade]
+
+Ref: SendMessage.senderId > User.id [delete: Cascade]

@@ -1,4 +1,5 @@
 import { db } from "@/config/db";
+import AuthApi from "@/middleware/auth-api";
 import { type NextApiRequest, NextApiResponse } from "next";
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -67,9 +68,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     switch (req.method) {
       case "GET":
-        return GET(req, res);
+        return AuthApi(GET, ["Admin", "Owner", "Cashier"])(req, res);
       case "PUT":
-        return PUT(req, res);
+        return AuthApi(PUT, ["Admin", "Owner"])(req, res);
       default:
         return res.status(405).json({ message: "Method not allowed" });
     }

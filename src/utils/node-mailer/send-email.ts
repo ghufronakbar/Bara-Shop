@@ -2,13 +2,13 @@ import { mailer } from "@/config/mailer";
 import { APP_NAME, EMAIL } from "@/constants";
 import { emailTemplate } from "./email-template";
 
-type EmailType = "DELETE_ACCOUNT" | "CREATE_ACCOUNT";
+type EmailType = "DELETE_ACCOUNT" | "CREATE_ACCOUNT" | "ANNOUNCEMENT";
 
 export const sendEmail = async (
-  to: string,
+  target: string,
   type: EmailType,
   name: string,
-  PASSWORD = ""
+  body = ""
 ) => {
   let content = "";
   let message = "";
@@ -24,9 +24,15 @@ export const sendEmail = async (
       break;
     case "CREATE_ACCOUNT":
       message = "Pembuatan akun berhasil";
-      content = PASSWORD;
+      content = body;
       subject = `Pembuatan akun ${APP_NAME}`;
       isPassword = true;
+      break;
+    case "ANNOUNCEMENT":
+      message = "Pemberitahuan";
+      content = body;
+      subject = `Pemberitahuan ${APP_NAME}`;
+      isPassword = false;
       break;
   }
 
@@ -34,7 +40,7 @@ export const sendEmail = async (
 
   const msg = {
     from: `"${APP_NAME}" <${EMAIL}>`,
-    to,
+    to: target,
     subject,
     html,
   };
@@ -46,5 +52,3 @@ export const sendEmail = async (
     return new Error("400:Gagal mengirim email ");
   }
 };
-
-export default sendEmail;

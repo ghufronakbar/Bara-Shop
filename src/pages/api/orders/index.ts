@@ -117,19 +117,19 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   }
 
   const information = await db.information.findMany();
-
-  const discount =
-    subTotal * (Number(information[0]?.discount || 0) / 100) || 0;
-  const priceBeforeTax = subTotal - discount;
-  const tax = priceBeforeTax * (Number(information[0]?.tax || 0) / 100) || 0;
-
-  const finalTotal = priceBeforeTax + tax;
-
   const customer = await db.customer.findUnique({
     where: {
       code,
     },
   });
+
+  const discount = customer
+    ? subTotal * (Number(information[0]?.discount || 0) / 100) || 0
+    : 0;
+  const priceBeforeTax = subTotal - discount;
+  const tax = priceBeforeTax * (Number(information[0]?.tax || 0) / 100) || 0;
+
+  const finalTotal = priceBeforeTax + tax;
 
   const data = await db.order.create({
     data: {

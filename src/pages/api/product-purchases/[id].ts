@@ -1,5 +1,6 @@
 import { db } from "@/config/db";
 import AuthApi from "@/middleware/auth-api";
+import { saveToLog } from "@/utils/saveToLog";
 import type { NextApiRequest, NextApiResponse } from "next/types";
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -92,6 +93,8 @@ const PUT = async (req: NextApiRequest, res: NextApiResponse) => {
     where: { id: productId },
   });
 
+  await saveToLog(req, res, "ProductPurchase", data);
+
   return res.status(200).json({ message: "Berhasil mengedit pembelian", data });
 };
 
@@ -122,6 +125,8 @@ const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     where: { id: check.productId },
   });
+
+  await saveToLog(req, res, "ProductPurchase", data);
 
   return res
     .status(200)

@@ -1,5 +1,6 @@
 import { db } from "@/config/db";
 import AuthApi from "@/middleware/auth-api";
+import { saveToLog } from "@/utils/saveToLog";
 import { $Enums } from "@prisma/client";
 import { type NextApiRequest, NextApiResponse } from "next";
 
@@ -49,6 +50,8 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
       type,
     },
   });
+
+  await saveToLog(req, res, "Customer", data);
 
   return res
     .status(200)

@@ -4,6 +4,7 @@ import { type NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import { sendEmail } from "@/utils/node-mailer/send-email";
 import AuthApi from "@/middleware/auth-api";
+import { saveToLog } from "@/utils/saveToLog";
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
   const data = await db.user.findMany({
@@ -56,6 +57,8 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
       role,
     },
   });
+
+  await saveToLog(req, res, "User", data);
 
   return res
     .status(200)

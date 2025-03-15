@@ -1,5 +1,6 @@
 import { db } from "@/config/db";
 import AuthApi from "@/middleware/auth-api";
+import { saveToLog } from "@/utils/saveToLog";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -42,6 +43,8 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
       id: productId,
     },
   });
+
+  await saveToLog(req, res, "ProductDefect", data);
 
   return res.status(200).json({ message: "Berhasil menambahkan data", data });
 };

@@ -1,5 +1,6 @@
 import { db } from "@/config/db";
 import AuthApi from "@/middleware/auth-api";
+import { saveToLog } from "@/utils/saveToLog";
 import { $Enums } from "@prisma/client";
 import { type NextApiRequest, NextApiResponse } from "next";
 
@@ -39,6 +40,8 @@ const PATCH = async (req: NextApiRequest, res: NextApiResponse) => {
     where: { id },
   });
 
+  await saveToLog(req, res, "User", data);
+
   return res
     .status(200)
     .json({ message: "Berhasil mengedit role pengguna", data });
@@ -60,6 +63,8 @@ const DELETE = async (req: NextApiRequest, res: NextApiResponse) => {
     },
     where: { id },
   });
+
+  await saveToLog(req, res, "User", data);
 
   return res.status(200).json({ message: "Berhasil menghapus pengguna", data });
 };

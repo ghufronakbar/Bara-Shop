@@ -1,6 +1,7 @@
 import { db } from "@/config/db";
 import AuthApi from "@/middleware/auth-api";
 import { midtransCheckout } from "@/utils/midtrans";
+import { saveToLog } from "@/utils/saveToLog";
 import { $Enums } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next/types";
 
@@ -184,11 +185,17 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
+    if (!checkData)
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+
+    await saveToLog(req, res, "Order", checkData);
+
     return res
       .status(200)
       .json({ message: "Berhasil membuat pesanan", data: checkData });
   }
 
+  await saveToLog(req, res, "Order", data);
   return res.status(200).json({ message: "Berhasil membuat pesanan", data });
 };
 

@@ -1,5 +1,6 @@
 import { db } from "@/config/db";
 import AuthApi from "@/middleware/auth-api";
+import { saveToLog } from "@/utils/saveToLog";
 import { type NextApiRequest, NextApiResponse } from "next";
 
 const GET = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -34,6 +35,8 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
       image,
     },
   });
+
+  await saveToLog(req, res, "Product", data);
 
   return res.status(200).json({ message: "Berhasil menambahkan produk", data });
 };

@@ -19,8 +19,8 @@ export const sendBulkWhatsapp = async (
     } catch (error) {
       if (error instanceof AxiosError) {
         console.log(
-          `Error sending WhatsApp message to ${phone}: `,
-          error?.response?.data
+          `Axios Error sending WhatsApp message to ${phone}: `,
+          error?.response
         );
       } else if (error instanceof Error) {
         console.log(

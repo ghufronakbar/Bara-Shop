@@ -2,7 +2,7 @@ import axios from "axios";
 import { FONNTE_API_KEY } from "@/constants/fonnte";
 
 export const whatsapp = axios.create({
-  baseURL: "/api",
+  baseURL: "https://api.fonnte.com",
 });
 
 whatsapp.interceptors.request.use(

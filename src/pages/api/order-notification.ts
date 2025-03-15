@@ -21,10 +21,10 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
     await db.transaction.update({
       where: {
         orderId: order_id,
-        detail: body,
       },
       data: {
         status: "Success",
+        detail: body,
       },
     });
   }

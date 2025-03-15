@@ -4,7 +4,8 @@ import { NextApiRequest, NextApiResponse } from "next/types";
 // WEB HOOKS
 
 const POST = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { transaction_status, order_id, fraud_status } = req.body;
+  const { body } = req;
+  const { transaction_status, order_id, fraud_status } = body;
 
   const check = await db.order.findUnique({
     where: { id: order_id },
@@ -20,6 +21,7 @@ const POST = async (req: NextApiRequest, res: NextApiResponse) => {
     await db.transaction.update({
       where: {
         orderId: order_id,
+        detail: body,
       },
       data: {
         status: "Success",
